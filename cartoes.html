@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartões - Sistema de Campeonato de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="cartoes">
+            <h2>Cartões do Campeonato</h2>
+
+            <div class="acoes">
+                <button id="btnAtualizarCartoes" class="btn-primary">Atualizar</button>
+                <button id="btnExportarCartoesPDF" class="btn-secondary">Exportar PDF</button>
+            </div>
+
+            <div id="listaCartoes">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Jogador</th>
+                            <th>Time</th>
+                            <th>AM</th>
+                            <th>AZ</th>
+                            <th>VER</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoCartoes">
+                        <!-- Cartões serão carregados dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="estatisticas">
+                <h3>Estatísticas Gerais</h3>
+                <div class="cards">
+                    <div class="card">
+                        <h4>Total de Cartões</h4>
+                        <p id="totalCartoes">0</p>
+                    </div>
+                    <div class="card">
+                        <h4>Média de Cartões por Jogo</h4>
+                        <p id="mediaCartoesJogo">0</p>
+                    </div>
+                    <div class="card">
+                        <h4>Jogador com Mais Cartões</h4>
+                        <p id="jogadorMaisCartoes">-</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sistema de Campeonato de Futebol - JCS</p>
+    </footer>
+
+    <!-- Modal de Login e Cadastro -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharAuth()">&times;</span>
+            <div class="auth-tabs">
+                <button id="tab-login" class="tab-btn active" onclick="mostrarTab('login')">Login</button>
+                <button id="tab-register" class="tab-btn" onclick="mostrarTab('register')">Cadastrar</button>
+            </div>
+            <div id="login-section" class="auth-section">
+                <h2>Login do Administrador</h2>
+                <form id="login-form">
+                    <label for="username">Usuário:</label>
+                    <input type="text" id="username" name="username" required>
+
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <button type="submit" class="btn-primary">Entrar</button>
+                </form>
+            </div>
+            <div id="register-section" class="auth-section" style="display: none;">
+                <h2>Cadastrar Novo Usuário</h2>
+                <form id="register-form">
+                    <label for="reg-username">Usuário:</label>
+                    <input type="text" id="reg-username" name="reg-username" required>
+
+                    <label for="reg-email">Email:</label>
+                    <input type="email" id="reg-email" name="reg-email" required>
+
+                    <label for="reg-password">Senha:</label>
+                    <input type="password" id="reg-password" name="reg-password" required>
+
+                    <label for="reg-confirm-password">Confirmar Senha:</label>
+                    <input type="password" id="reg-confirm-password" name="reg-confirm-password" required>
+
+                    <button type="submit" class="btn-primary">Cadastrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/cartoes.js"></script>
+</body>
+</html>

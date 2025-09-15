@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times - Sistema de Campeonato de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="times">
+            <h2>Gerenciamento de Times</h2>
+
+            <button id="btnNovoTime" class="btn-primary">Novo Time</button>
+            <button id="btnAtualizar" class="btn-secondary" style="margin-left: 10px;">Atualizar Lista</button>
+
+            <div id="formNovoTime" style="display: none;">
+                <form id="timeForm">
+                    <h3>Cadastrar Novo Time</h3>
+                    <label for="nomeTime">Nome do Time:</label>
+                    <input type="text" id="nomeTime" required>
+
+                    <label for="tecnico">Técnico:</label>
+                    <input type="text" id="tecnico">
+
+                    <label for="cores">Cores do Uniforme:</label>
+                    <input type="text" id="cores">
+
+                    <label for="dataFundacao">Data de Fundação:</label>
+                    <input type="date" id="dataFundacao">
+
+                    <label for="logo">Logo/Escudo (URL):</label>
+                    <input type="url" id="logo">
+
+                    <button type="submit">Salvar</button>
+                    <button type="button" id="btnCancelar">Cancelar</button>
+                </form>
+            </div>
+
+            <div id="listaTimes">
+                <h3>Times Cadastrados</h3>
+                <table id="tabelaTimes">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Técnico</th>
+                            <th>Cores</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Times serão carregados dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sistema de Campeonato de Futebol - JCS</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/database.js"></script>
+    <script src="js/teams.js"></script>
+</body>
+</html>

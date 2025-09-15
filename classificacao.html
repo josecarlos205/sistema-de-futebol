@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificação - Sistema de Campeonato de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="classificacao">
+            <h2>Tabela de Classificação</h2>
+
+            <div class="acoes">
+                <button id="btnAtualizar" class="btn-primary">Atualizar Classificação</button>
+                <button id="btnExportarPDF" class="btn-secondary">Exportar PDF</button>
+            </div>
+
+            <div id="tabelaClassificacao">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Time</th>
+                            <th>Pts</th>
+                            <th>J</th>
+                            <th>V</th>
+                            <th>E</th>
+                            <th>D</th>
+                            <th>GP</th>
+                            <th>GC</th>
+                            <th>SG</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoClassificacao">
+                        <!-- Classificação será carregada dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="legenda">
+                <h3>Legenda</h3>
+                <ul>
+                    <li><strong>Pos:</strong> Posição</li>
+                    <li><strong>Pts:</strong> Pontos</li>
+                    <li><strong>J:</strong> Jogos</li>
+                    <li><strong>V:</strong> Vitórias</li>
+                    <li><strong>E:</strong> Empates</li>
+                    <li><strong>D:</strong> Derrotas</li>
+                    <li><strong>GP:</strong> Gols Pró</li>
+                    <li><strong>GC:</strong> Gols Contra</li>
+                    <li><strong>SG:</strong> Saldo de Gols</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sistema de Campeonato de Futebol - JCS</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/database.js"></script>
+    <script src="js/classificacao.js"></script>
+</body>
+</html>

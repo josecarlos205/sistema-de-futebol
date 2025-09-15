@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogos - Sistema de Campeonato de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="jogos">
+            <h2>Gerenciamento de Jogos</h2>
+
+            <div class="acoes">
+                <button id="btnGerarTabela" class="btn-primary">Gerar Tabela de Jogos</button>
+                <button id="btnNovoJogo" class="btn-secondary">Novo Jogo</button>
+            </div>
+
+            <div id="formNovoJogo" style="display: none;">
+                <form id="jogoForm">
+                    <h3>Agendar Novo Jogo</h3>
+
+                    <label for="timeCasa">Time da Casa:</label>
+                    <select id="timeCasa" required>
+                        <option value="">Selecione</option>
+                    </select>
+
+                    <label for="timeVisitante">Time Visitante:</label>
+                    <select id="timeVisitante" required>
+                        <option value="">Selecione</option>
+                    </select>
+
+                    <label for="dataHora">Data e Hora:</label>
+                    <input type="datetime-local" id="dataHora" required>
+
+                    <label for="local">Local:</label>
+                    <input type="text" id="local" required>
+
+                    <label for="arbitro">Árbitro:</label>
+                    <input type="text" id="arbitro">
+
+                    <label for="observacoes">Observações:</label>
+                    <textarea id="observacoes"></textarea>
+
+                    <button type="submit">Agendar</button>
+                    <button type="button" id="btnCancelarJogo">Cancelar</button>
+                </form>
+            </div>
+
+            <div id="listaJogos">
+                <h3>Jogos Agendados</h3>
+                <div class="filtros">
+                    <label for="filtroStatus">Status:</label>
+                    <select id="filtroStatus">
+                        <option value="">Todos</option>
+                        <option value="agendado">Agendado</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+
+                <table id="tabelaJogos">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Jogo</th>
+                            <th>Placar</th>
+                            <th>Local</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Jogos serão carregados dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal para registrar resultado -->
+            <div id="modalResultado" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3>Registrar Resultado</h3>
+                    <form id="resultadoForm">
+                        <div id="infoJogo"></div>
+
+                        <label for="golsCasa">Gols Time Casa:</label>
+                        <input type="number" id="golsCasa" min="0" required>
+
+                        <label for="golsVisitante">Gols Time Visitante:</label>
+                        <input type="number" id="golsVisitante" min="0" required>
+
+                        <div id="golsJogadores">
+                            <h4>Gols Marcados</h4>
+                            <div id="listaGolsCasa"></div>
+                            <div id="listaGolsVisitante"></div>
+                        </div>
+
+                        <div id="cartoesJogadores">
+                            <h4>Cartões Distribuídos</h4>
+                            <div id="listaCartoesCasa"></div>
+                            <div id="listaCartoesVisitante"></div>
+                        </div>
+
+                        <button type="submit">Salvar Resultado</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal para editar jogo -->
+            <div id="modalEditarJogo" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" id="closeModalEditar">&times;</span>
+                    <h3>Editar Jogo</h3>
+                    <form id="editarJogoForm">
+                        <div id="infoJogoEditar"></div>
+
+                        <label for="editarTimeCasa">Time da Casa:</label>
+                        <select id="editarTimeCasa" required>
+                            <option value="">Selecione</option>
+                        </select>
+
+                        <label for="editarTimeVisitante">Time Visitante:</label>
+                        <select id="editarTimeVisitante" required>
+                            <option value="">Selecione</option>
+                        </select>
+
+                        <label for="editarDataHora">Data e Hora:</label>
+                        <input type="datetime-local" id="editarDataHora" required>
+
+                        <label for="editarLocal">Local:</label>
+                        <input type="text" id="editarLocal" required>
+
+                        <label for="editarArbitro">Árbitro:</label>
+                        <input type="text" id="editarArbitro">
+
+                        <label for="editarObservacoes">Observações:</label>
+                        <textarea id="editarObservacoes"></textarea>
+
+                        <div class="modal-buttons">
+                            <button type="submit" class="btn-primary">Salvar Alterações</button>
+                            <button type="button" id="btnCancelarEditar" class="btn-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal para opções de súmula -->
+            <div id="modalSumula" class="modal" style="display: none;">
+                <div class="modal-content" style="max-width: 800px;">
+                    <span class="close" id="closeModalSumula">&times;</span>
+                    <h3>Súmula do Jogo</h3>
+
+                    <!-- Informações básicas do jogo -->
+                    <div id="infoJogoSumula" style="margin-bottom: 1rem; padding: 1rem; background-color: #f8f9fa; border-radius: 4px;"></div>
+
+                    <!-- Resumo do placar -->
+                    <div id="resumoPlacar" style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background-color: #e8f4f8; border-radius: 4px;">
+                        <h4>Resultado Final</h4>
+                        <div id="placarFinal" style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0;"></div>
+                    </div>
+
+                    <!-- Súmula dos Jogadores -->
+                    <div id="sumulaJogadores" style="margin-bottom: 1.5rem;">
+                        <h4>Relação de Jogadores</h4>
+
+                        <!-- Time da Casa -->
+                        <div id="timeCasaSumula" style="margin-bottom: 2rem;">
+                            <h5 id="timeCasaNomeSumula" style="background-color: #e8f4f8; padding: 0.5rem; border-radius: 4px;"></h5>
+                            <div id="tabelaCasaSumula" style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <thead>
+                                        <tr style="background-color: #f8f9fa;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 60px;">Nº</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Nome do Atleta</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">Gols</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">AM</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">AZ</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">VER</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="corpoTabelaCasa">
+                                        <!-- Jogadores do time da casa serão inseridos aqui -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Time Visitante -->
+                        <div id="timeVisitanteSumula">
+                            <h5 id="timeVisitanteNomeSumula" style="background-color: #f8e8e8; padding: 0.5rem; border-radius: 4px;"></h5>
+                            <div id="tabelaVisitanteSumula" style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <thead>
+                                        <tr style="background-color: #f8f9fa;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 60px;">Nº</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Nome do Atleta</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">Gols</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">AM</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">AZ</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 50px;">VER</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="corpoTabelaVisitante">
+                                        <!-- Jogadores do time visitante serão inseridos aqui -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Árbitro e observações -->
+                    <div id="detalhesSumula" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: 4px;">
+                        <div id="arbitroInfo" style="margin-bottom: 0.5rem;"></div>
+                        <div id="observacoesInfo"></div>
+                    </div>
+
+                    <p style="text-align: center; margin-bottom: 1.5rem;">Escolha como deseja gerar a súmula:</p>
+
+                    <div class="modal-buttons" style="display: flex; gap: 1rem; justify-content: center;">
+                        <button id="btnGerarSumulaPDF" class="btn-primary" style="flex: 1;">
+                            📄 Gerar Súmula em PDF
+                        </button>
+                        <button id="btnImprimirSumula" class="btn-secondary" style="flex: 1;">
+                            🖨️ Imprimir Súmula
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <button id="btnCancelarSumula" class="btn-secondary" style="background-color: #95a5a6;">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sistema de Campeonato de Futebol - JCS</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/matches.js"></script>
+    <script src="js/pdf-generator.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogadores - Sistema de Campeonato de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="jogadores">
+            <h2>Gerenciamento de Jogadores</h2>
+
+            <div class="filtros">
+                <label for="selectTime">Filtrar por Time:</label>
+                <select id="selectTime">
+                    <option value="">Todos os Times</option>
+                </select>
+            </div>
+
+            <button id="btnNovoJogador" class="btn-primary">Novo Jogador</button>
+
+            <div id="formNovoJogador" style="display: none;">
+                <form id="jogadorForm">
+                    <h3>Cadastrar Novo Jogador</h3>
+
+                    <label for="timeJogador">Time:</label>
+                    <select id="timeJogador" required>
+                        <option value="">Selecione um time</option>
+                    </select>
+
+                    <label for="nomeJogador">Nome Completo:</label>
+                    <input type="text" id="nomeJogador" required>
+
+                    <label for="apelido">Apelido/Camisa:</label>
+                    <input type="text" id="apelido">
+
+                    <label for="numeroCamisa">Número da Camisa (1-99):</label>
+                    <input type="number" id="numeroCamisa" min="1" max="99" required>
+
+                    <label for="posicao">Posição:</label>
+                    <select id="posicao" required>
+                        <option value="">Selecione</option>
+                        <option value="goleiro">Goleiro</option>
+                        <option value="zagueiro">Zagueiro</option>
+                        <option value="lateral">Lateral</option>
+                        <option value="volante">Volante</option>
+                        <option value="meia">Meia</option>
+                        <option value="atacante">Atacante</option>
+                    </select>
+
+                    <label for="dataNascimento">Data de Nascimento:</label>
+                    <input type="date" id="dataNascimento">
+
+                    <label for="foto">Foto (URL):</label>
+                    <input type="url" id="foto">
+
+                    <button type="submit">Salvar</button>
+                    <button type="button" id="btnCancelarJogador">Cancelar</button>
+                </form>
+            </div>
+
+            <div id="listaJogadores">
+                <h3>Jogadores Cadastrados</h3>
+                <table id="tabelaJogadores">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Apelido</th>
+                            <th>Número</th>
+                            <th>Posição</th>
+                            <th>Time</th>
+                            <th>Gols</th>
+                            <th>Cartões</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Jogadores serão carregados dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sistema de Campeonato de Futebol - JCS</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/database.js"></script>
+    <script src="js/players.js"></script>
+</body>
+</html>

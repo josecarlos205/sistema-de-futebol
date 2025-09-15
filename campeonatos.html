@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campeonatos - Sistema de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h2>Gerenciar Campeonatos</h2>
+
+            <div class="actions">
+                <button id="btnNovoCampeonato" class="btn-primary">Novo Campeonato</button>
+            </div>
+
+            <div id="formNovoCampeonato" class="form-container" style="display: none;">
+                <h3>Cadastrar Novo Campeonato</h3>
+                <form id="campeonatoForm">
+                    <div class="form-group">
+                        <label for="nomeCampeonato">Nome do Campeonato:</label>
+                        <input type="text" id="nomeCampeonato" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataInicio">Data de Início:</label>
+                        <input type="date" id="dataInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataFim">Data de Fim:</label>
+                        <input type="date" id="dataFim">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Salvar</button>
+                        <button type="button" id="btnCancelarCampeonato" class="btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table id="tabelaCampeonatos">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Data Início</th>
+                            <th>Data Fim</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sistema de Campeonato de Futebol</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/database.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/campeonatos.js"></script>
+</body>
+</html>

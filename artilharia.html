@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artilharia - Sistema de Campeonato de Futebol</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Campeonato de Futebol Amador</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="campeonatos.html">Campeonatos</a></li>
+                <li><a href="times.html">Times</a></li>
+                <li><a href="jogadores.html">Jogadores</a></li>
+                <li><a href="jogos.html">Jogos</a></li>
+                <li><a href="classificacao.html">Classificação</a></li>
+                <li><a href="artilharia.html">Artilharia</a></li>
+                <li><a href="cartoes.html">Cartões</a></li>
+            </ul>
+            <div id="auth-section">
+                <button id="login-btn" onclick="mostrarLogin()">Login</button>
+                <button id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="artilharia">
+            <h2>Artilheiros do Campeonato</h2>
+
+            <div class="acoes">
+                <button id="btnAtualizarArtilharia" class="btn-primary">Atualizar</button>
+                <button id="btnExportarArtilhariaPDF" class="btn-secondary">Exportar PDF</button>
+            </div>
+
+            <div id="listaArtilheiros">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Jogador</th>
+                            <th>Time</th>
+                            <th>Gols</th>
+                            <th>Jogos</th>
+                            <th>Média</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoArtilheiros">
+                        <!-- Artilheiros serão carregados dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="estatisticas">
+                <h3>Estatísticas Gerais</h3>
+                <div class="cards">
+                    <div class="card">
+                        <h4>Total de Gols</h4>
+                        <p id="totalGols">0</p>
+                    </div>
+                    <div class="card">
+                        <h4>Média de Gols por Jogo</h4>
+                        <p id="mediaGolsJogo">0</p>
+                    </div>
+                    <div class="card">
+                        <h4>Jogador com Mais Gols</h4>
+                        <p id="artilheiroMaximo">-</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sistema de Campeonato de Futebol - JCS</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/database.js"></script>
+    <script src="js/artilharia.js"></script>
+</body>
+</html>

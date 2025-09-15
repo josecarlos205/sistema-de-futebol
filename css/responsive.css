@@ -1,0 +1,189 @@
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    nav a {
+        display: block;
+        padding: 0.5rem;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    table th, table td {
+        padding: 0.5rem;
+    }
+
+    /* Melhorar tabelas em dispositivos móveis */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Botões em dispositivos móveis */
+    .btn-primary, .btn-secondary, .btn-registrar, .btn-sumula, .btn-editar, .btn-cancelar {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        min-width: auto;
+        margin: 0.25rem;
+    }
+
+    /* Formulários responsivos */
+    form {
+        padding: 1rem;
+        margin: 0;
+    }
+
+    form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    form input, form select, form textarea {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    /* Modal responsivo */
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        margin: 5% auto;
+        padding: 1rem;
+    }
+
+    /* Ações da tabela */
+    .acoes {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .acoes button {
+        width: 100%;
+    }
+
+    /* Filtros responsivos */
+    .filtros {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .filtros label {
+        font-weight: bold;
+    }
+
+    .filtros select {
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    main {
+        padding: 0 0.5rem;
+    }
+
+    .card {
+        padding: 0.75rem;
+    }
+
+    form {
+        padding: 0.75rem;
+    }
+
+    /* Tabelas muito pequenas */
+    table {
+        font-size: 0.8rem;
+    }
+
+    table th, table td {
+        padding: 0.25rem;
+    }
+
+    /* Botões menores */
+    button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Campos de entrada menores */
+    input[type="number"] {
+        max-width: 80px;
+    }
+
+    /* Lista de gols e cartões responsiva */
+    .gol-input, .cartao-input {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .gol-input input, .cartao-input input, .cartao-input select {
+        width: 100%;
+    }
+
+    /* Modal ainda mais compacto */
+    .modal-content {
+        width: 98%;
+        margin: 2% auto;
+        padding: 0.5rem;
+    }
+
+    .modal-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Melhorias gerais para touch devices */
+@media (hover: none) and (pointer: coarse) {
+    /* Aumentar área de toque para botões */
+    button, .btn-primary, .btn-secondary, .btn-registrar, .btn-sumula, .btn-editar, .btn-cancelar {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Links maiores para toque */
+    nav a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Campos de formulário maiores */
+    input, select, textarea {
+        min-height: 44px;
+    }
+}
+
+/* Melhorar experiência em tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    table {
+        font-size: 0.95rem;
+    }
+}
