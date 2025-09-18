@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectTime = document.getElementById('selectTime');
     const selectTimeJogador = document.getElementById('timeJogador');
     const tabelaJogadoresBody = document.querySelector('#tabelaJogadores tbody');
-    let originalSubmitHandler = null;
+    let isEditing = false;
+    let editingId = null;
 
     btnNovoJogador.addEventListener('click', () => {
         formNovoJogador.style.display = 'block';
@@ -26,15 +27,25 @@ document.addEventListener('DOMContentLoaded', function() {
         formNovoJogador.style.display = 'none';
         btnNovoJogador.style.display = 'inline-block';
         jogadorForm.reset();
+        isEditing = false;
+        editingId = null;
     });
 
     selectTime.addEventListener('change', () => {
         carregarJogadores();
     });
 
-    jogadorForm._submitHandler = async function(e) {
+    jogadorForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        if (isEditing) {
+            await atualizarJogador(editingId);
+        } else {
+            await criarJogador();
+        }
+    });
+
+    async function criarJogador() {
         const timeId = document.getElementById('timeJogador').value;
         const nome = document.getElementById('nomeJogador').value.trim();
         const apelido = document.getElementById('apelido').value.trim();
@@ -86,10 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultado = await createJogador(novoJogador);
             if (resultado && !resultado.error) {
                 alert('Jogador cadastrado com sucesso!');
-                jogadorForm.reset();
-                formNovoJogador.style.display = 'none';
-                btnNovoJogador.style.display = 'inline-block';
-                carregarJogadores();
+                resetForm();
             } else {
                 alert('Erro ao cadastrar jogador.');
             }
@@ -97,10 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erro ao cadastrar jogador:', error);
             alert('Erro ao cadastrar jogador.');
         }
-    };
-
-    jogadorForm.addEventListener('submit', jogadorForm._submitHandler);
-    originalSubmitHandler = jogadorForm._submitHandler;
+    }
 
     carregarTimes();
     carregarJogadores();
@@ -222,16 +227,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('dataNascimento').value = jogador.data_nascimento ? jogador.data_nascimento.split('T')[0] : '';
             document.getElementById('foto').value = jogador.foto_url || '';
 
+            isEditing = true;
+            editingId = id;
+
             formNovoJogador.style.display = 'block';
             btnNovoJogador.style.display = 'none';
-
-            // Alterar evento submit para atualizar
-            jogadorForm.removeEventListener('submit', originalSubmitHandler);
-            jogadorForm._submitHandler = async function(e) {
-                e.preventDefault();
-                await atualizarJogador(id);
-            };
-            jogadorForm.addEventListener('submit', jogadorForm._submitHandler);
 
         } catch (error) {
             console.error('Erro ao buscar jogador:', error);
@@ -288,15 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             alert('Jogador atualizado com sucesso!');
-            jogadorForm.reset();
-            formNovoJogador.style.display = 'none';
-            btnNovoJogador.style.display = 'inline-block';
-            carregarJogadores();
-
-            // Restaurar evento submit
-            jogadorForm.removeEventListener('submit', jogadorForm._submitHandler);
-            jogadorForm.addEventListener('submit', originalSubmitHandler);
-            jogadorForm._submitHandler = null;
+            resetForm();
 
         } catch (error) {
             console.error('Erro ao atualizar jogador:', error);
@@ -336,5 +328,14 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erro ao alterar status do jogador:', error);
             alert('Erro ao alterar status do jogador.');
         }
+    }
+
+    function resetForm() {
+        jogadorForm.reset();
+        formNovoJogador.style.display = 'none';
+        btnNovoJogador.style.display = 'inline-block';
+        isEditing = false;
+        editingId = null;
+        carregarJogadores();
     }
 });
