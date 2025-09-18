@@ -1,5 +1,7 @@
 // Funções principais do sistema
 
+import { calcularClassificacaoCompleta } from './classificacao.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar dashboard
     initDashboard();
@@ -19,7 +21,7 @@ async function loadDashboardData() {
         // Carregar dados do dashboard
         const campeonatos = await getCampeonatos();
         const jogos = await getJogos(campeonatos[0]?.id); // Assumindo primeiro campeonato
-        const classificacao = await calcularClassificacao(campeonatos[0]?.id);
+        const classificacao = await calcularClassificacaoCompleta(campeonatos[0]?.id);
 
         // Atualizar interface
         updateProximosJogos(jogos);
@@ -42,8 +44,8 @@ function updateProximosJogos(jogos) {
 function updateClassificacao(classificacao) {
     const container = document.querySelector('.card:nth-child(2) p');
     if (container && classificacao) {
-        const top3 = classificacao.slice(0, 3);
-        container.innerHTML = top3.map((t, i) => `${i+1}. ${t.nome} - ${t.pontos} pts`).join('<br>');
+        const top4 = classificacao.slice(0, 4);
+        container.innerHTML = top4.map((t, i) => `${i+1}. ${t.nome} - ${t.pontos} pts`).join('<br>');
     }
 }
 

@@ -33,10 +33,10 @@ async function getTimes(campeonatoId) {
         .from('times')
         .select('*');
 
-    if (campeonatoId !== null) {
+    if (campeonatoId != null) {
         query = query.eq('campeonato_id', campeonatoId);
     }
-    // Quando campeonatoId é null, não aplica filtro para carregar todos os times
+    // Quando campeonatoId é null ou undefined, não aplica filtro para carregar todos os times
 
     const { data, error } = await query;
     if (error) {
