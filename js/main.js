@@ -297,6 +297,8 @@ function logout() {
     mostrarMensagem('Logout realizado com sucesso!', 'info');
 }
 
+window.logout = logout;
+
 // Fechar modal ao clicar fora
 window.onclick = function(event) {
     const modal = document.getElementById('auth-modal');
