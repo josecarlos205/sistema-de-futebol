@@ -109,7 +109,7 @@ function gerarSumulaPDF(jogo, escalaoCasa, escalaoVisitante, gols, cartoes, arbi
             currentX += colWidths[0];
 
             // NOME - com tratamento para texto longo
-            doc.rect(currentX, rowY - 10, colWidths[1], 20); // Aumentado altura da célula
+            doc.rect(currentX, rowY - 10, colWidths[1], 16); // Aumentado altura da célula
             const nomeJogador = jogador.nome_completo.toUpperCase();
             doc.text(nomeJogador, currentX + 2, rowY);
             currentX += colWidths[1];
@@ -150,37 +150,41 @@ function gerarSumulaPDF(jogo, escalaoCasa, escalaoVisitante, gols, cartoes, arbi
     const maxTableEndY = Math.max(endYCasa, endYVisitante);
 
     // Rodapé com capitão, árbitro, mesário, assinaturas e observações
-    let footerY = maxTableEndY + 30; // Aumentado espaçamento após a tabela
+    let footerY = maxTableEndY + 20; // Aumentado espaçamento após a tabela
 
     // Verificar quebra de página antes do rodapé
-    footerY = verificarQuebraPagina(footerY, 100); // Aumentado espaço necessário
+    footerY = verificarQuebraPagina(footerY, 60); // Aumentado espaço necessário
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
 
     // Capitão e árbitro
-    doc.text(`CAPITÃO: ${jogo.capitao_casa || ''}`, 40, footerY);
-    doc.text(`CAPITÃO: ${jogo.capitao_visitante || ''}`, 300, footerY);
-
     footerY += 18; // Aumentado espaçamento
-    doc.text(`ÁRBITRO: ${arbitro || ''}`, 40, footerY);
-    doc.text(`MESÁRIO: ${jogo.mesario || ''}`, 300, footerY);
+    doc.text(`CAPITÃO: ${jogo.capitao_casa || ''}`, 410, footerY);
+    doc.text(`CAPITÃO: ${jogo.capitao_visitante || ''}`, 610, footerY);
 
-    footerY += 35; // Aumentado espaçamento antes das assinaturas
+
+    doc.text(`ÁRBITRO: ${arbitro || ''}`, 40, footerY);
+    doc.text(`MESÁRIO: ${jogo.mesario || ''}`, 220, footerY);
+
+    footerY += 20; // Aumentado espaçamento antes das assinaturas
 
     // Verificar quebra de página antes das assinaturas
     footerY = verificarQuebraPagina(footerY, 60); // Aumentado espaço necessário
 
     // Linhas para assinaturas
-    doc.text('______________________________', 40, footerY);
-    doc.text('Árbitro', 60, footerY + 15); // Aumentado espaçamento para o texto
+    doc.text('______________________________', 30, footerY);
+    doc.text('Árbitro', 90, footerY + 15); // Aumentado espaçamento para o texto
 
-    doc.text('______________________________', 300, footerY);
-    doc.text('Representante Time Casa', 320, footerY + 15); // Aumentado espaçamento para o texto
+    doc.text('______________________________', 210, footerY);
+    doc.text('Mesário', 270, footerY + 15); // Aumentado espaçamento para o texto
 
-    footerY += 35; // Aumentado espaçamento
-    doc.text('______________________________', 300, footerY);
-    doc.text('Representante Time Visitante', 320, footerY + 15); // Aumentado espaçamento para o texto
+    doc.text('______________________________', 400, footerY);
+    doc.text('Representante Time Casa', 420, footerY + 15); // Aumentado espaçamento para o texto
+
+ //   footerY += 35; // Aumentado espaçamento
+    doc.text('______________________________', 600, footerY);
+    doc.text('Representante Time Visitante', 620, footerY + 15); // Aumentado espaçamento para o texto
 
     footerY += 45; // Aumentado espaçamento antes das observações
 

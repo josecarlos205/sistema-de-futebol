@@ -1,5 +1,70 @@
 // Sistema de artilharia
 
+export async function calcularTop4Artilheiros() {
+    try {
+        // Buscar jogadores com seus times
+        const { data: jogadores, error } = await supabaseClient
+            .from('jogadores')
+            .select(`
+                *,
+                times:time_id (
+                    nome
+                )
+            `)
+            .eq('status', 'ativo')
+            .order('gols_marcados', { ascending: false });
+
+        if (error) {
+            console.error('Erro ao buscar jogadores:', error);
+            return [];
+        }
+
+        // Calcular jogos disputados por jogador (simplificado)
+        const jogos = await getJogos(null);
+        const { data: gols, error: golsError } = await supabaseClient
+            .from('gols')
+            .select('*');
+
+        if (golsError) {
+            console.error('Erro ao buscar gols:', golsError);
+            return [];
+        }
+
+        const artilheiros = jogadores.map(jogador => {
+            // Contar jogos em que o jogador participou (verificar gols na tabela gols)
+            const jogosJogador = jogos.filter(j =>
+                j.status === 'finalizado' &&
+                gols.some(gol => gol.jogo_id === j.id && gol.jogador_id === jogador.id)
+            );
+
+            return {
+                ...jogador,
+                time_nome: jogador.times?.nome || 'N/A',
+                jogos: jogosJogador.length,
+                gols_marcados: jogador.gols_marcados || 0
+            };
+        });
+
+        // Filtrar jogadores com pelo menos 1 gol e ordenar, pegar apenas os 4 primeiros
+        return artilheiros
+            .filter(j => j.gols_marcados > 0)
+            .sort((a, b) => {
+                if (a.gols_marcados !== b.gols_marcados) {
+                    return b.gols_marcados - a.gols_marcados;
+                }
+                // Em caso de empate, ordenar por média de gols
+                const mediaA = a.jogos > 0 ? a.gols_marcados / a.jogos : 0;
+                const mediaB = b.jogos > 0 ? b.gols_marcados / b.jogos : 0;
+                return mediaB - mediaA;
+            })
+            .slice(0, 4);
+
+    } catch (error) {
+        console.error('Erro ao calcular top 4 artilheiros:', error);
+        return [];
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const btnAtualizarArtilharia = document.getElementById('btnAtualizarArtilharia');
     const btnExportarArtilhariaPDF = document.getElementById('btnExportarArtilhariaPDF');

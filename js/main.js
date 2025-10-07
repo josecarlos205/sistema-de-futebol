@@ -1,6 +1,7 @@
 // Funções principais do sistema
 
 import { calcularClassificacaoCompleta } from './classificacao.js';
+import { calcularTop4Artilheiros } from './artilharia.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar dashboard
@@ -49,10 +50,24 @@ function updateClassificacao(classificacao) {
     }
 }
 
-function updateArtilheiros() {
+async function updateArtilheiros() {
     const container = document.querySelector('.card:nth-child(3) p');
-    // Implementar busca de artilheiros
-    container.innerHTML = 'Implementar busca de artilheiros';
+    if (!container) return;
+
+    try {
+        const artilheiros = await calcularTop4Artilheiros();
+
+        if (artilheiros && artilheiros.length > 0) {
+            container.innerHTML = artilheiros.map((j, i) =>
+                `${i+1}. ${j.nome_completo} (${j.time_nome}) - ${j.gols_marcados} gols`
+            ).join('<br>');
+        } else {
+            container.innerHTML = 'Nenhum artilheiro encontrado';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar artilheiros:', error);
+        container.innerHTML = 'Erro ao carregar artilheiros';
+    }
 }
 
 function updateSuspensoes() {
@@ -170,6 +185,16 @@ function formatarData(data) {
 
 function formatarHora(data) {
     return new Date(data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatarDataHora(dataHora) {
+    const data = new Date(dataHora);
+    const dataFormatada = data.toLocaleDateString('pt-BR');
+    const horaFormatada = data.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    return `${dataFormatada} ${horaFormatada}`;
 }
 
 // Funções de autenticação
