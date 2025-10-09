@@ -70,10 +70,102 @@ async function updateArtilheiros() {
     }
 }
 
-function updateSuspensoes() {
+async function calcularSuspensoes() {
+    try {
+        // Buscar jogadores com seus times
+        const { data: jogadores, error } = await supabaseClient
+            .from('jogadores')
+            .select(`
+                *,
+                times:time_id (
+                    nome
+                )
+            `)
+            .eq('status', 'ativo');
+
+        if (error) {
+            console.error('Erro ao buscar jogadores:', error);
+            return [];
+        }
+
+        // Buscar cartões da tabela cartoes
+        const { data: cartoes, error: cartoesError } = await supabaseClient
+            .from('cartoes')
+            .select('*');
+
+        if (cartoesError) {
+            console.error('Erro ao buscar cartões:', cartoesError);
+            return [];
+        }
+
+        // Agrupar cartões por jogador
+        const cartoesPorJogador = {};
+        cartoes.forEach(cartao => {
+            if (!cartoesPorJogador[cartao.jogador_id]) {
+                cartoesPorJogador[cartao.jogador_id] = {
+                    amarelos: 0,
+                    azuis: 0,
+                    vermelhos: 0
+                };
+            }
+            if (cartao.tipo === 'amarelo') {
+                cartoesPorJogador[cartao.jogador_id].amarelos++;
+            } else if (cartao.tipo === 'azul') {
+                cartoesPorJogador[cartao.jogador_id].azuis++;
+            } else if (cartao.tipo === 'vermelho') {
+                cartoesPorJogador[cartao.jogador_id].vermelhos++;
+            }
+        });
+
+        // Filtrar jogadores suspensos
+        const suspensoes = [];
+        jogadores.forEach(jogador => {
+            const cartoesJogador = cartoesPorJogador[jogador.id] || { amarelos: 0, azuis: 0, vermelhos: 0 };
+
+            let motivo = '';
+            if (cartoesJogador.vermelhos >= 1) {
+                motivo = 'Cartão vermelho';
+            } else if (cartoesJogador.azuis >= 2) {
+                motivo = `${cartoesJogador.azuis} cartões azuis`;
+            } else if (cartoesJogador.amarelos >= 3) {
+                motivo = `${cartoesJogador.amarelos} cartões amarelos`;
+            }
+
+            if (motivo) {
+                suspensoes.push({
+                    ...jogador,
+                    time_nome: jogador.times?.nome || 'N/A',
+                    motivo: motivo
+                });
+            }
+        });
+
+        return suspensoes;
+
+    } catch (error) {
+        console.error('Erro ao calcular suspensões:', error);
+        return [];
+    }
+}
+
+async function updateSuspensoes() {
     const container = document.querySelector('.card:nth-child(4) p');
-    // Implementar busca de suspensões
-    container.innerHTML = 'Implementar busca de suspensões';
+    if (!container) return;
+
+    try {
+        const suspensoes = await calcularSuspensoes();
+
+        if (suspensoes && suspensoes.length > 0) {
+            container.innerHTML = suspensoes.map((suspensao, index) =>
+                `${index + 1}. ${suspensao.nome_completo} (${suspensao.time_nome}) - ${suspensao.motivo}`
+            ).join('<br>');
+        } else {
+            container.innerHTML = 'Nenhum jogador suspenso no momento';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar suspensões:', error);
+        container.innerHTML = 'Erro ao carregar suspensões';
+    }
 }
 
 // Funções de validação
