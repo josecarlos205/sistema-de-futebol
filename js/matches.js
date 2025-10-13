@@ -1,6 +1,25 @@
 // Gerenciamento de jogos
 
+import { getTimes, createJogo, supabaseClient, getJogadores, createGol, createCartao, getCampeonatos, createCampeonato, createJogosBatch } from './database.js';
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Verificar autenticação e permissões antes de permitir ações
+    if (localStorage.getItem('admin_logged_in') !== 'true') {
+        alert('Você precisa estar logado para acessar esta página.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Verificar permissões para acessar jogos.html
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const tipo = userData.tipo;
+    const paginasPermitidas = userData.paginas_permitidas || [];
+    if (tipo !== 'admin' && !paginasPermitidas.includes('jogos.html')) {
+        alert('Você não tem permissão para acessar esta página.');
+        window.location.href = 'index.html';
+        return;
+    }
+
     const btnGerarTabela = document.getElementById('btnGerarTabela');
     const btnNovoJogo = document.getElementById('btnNovoJogo');
     const formNovoJogo = document.getElementById('formNovoJogo');

@@ -1,5 +1,7 @@
 // Sistema de artilharia
 
+import { supabaseClient, getJogos } from './database.js';
+
 export async function calcularTop4Artilheiros() {
     try {
         // Buscar jogadores com seus times
@@ -90,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 corpoArtilheiros.innerHTML = '';
 
                 artilheiros.forEach((jogador, index) => {
-                    const media = jogador.jogos > 0 ? (jogador.gols / jogador.jogos).toFixed(2) : '0.00';
+                    const media = jogador.jogos > 0 ? (jogador.gols_marcados / jogador.jogos).toFixed(2) : '0.00';
                     const tr = document.createElement('tr');
 
                     tr.innerHTML = `

@@ -1,5 +1,7 @@
 // Sistema de classificação
 
+import { getTimes, getJogadores, getJogos, supabaseClient } from './database.js';
+
 export async function calcularClassificacaoCompleta(campeonatoId) {
         try {
             const times = await getTimes(campeonatoId);

@@ -3,12 +3,12 @@ const SUPABASE_URL = 'https://kbtjgelflweevfvtmxxi.supabase.co'; // Substitua pe
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtidGpnZWxmbHdlZXZmdnRteHhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0Mjg4MDEsImV4cCI6MjA3MzAwNDgwMX0.bv79MT8O_P2O_Cy-9N9mhIkDLuhvZ3MgJISMAsP_Z-Q'; // Substitua pela chave anônima do Supabase
 
 const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Funções para interagir com o banco de dados
 
 // Campeonatos
-async function getCampeonatos() {
+export async function getCampeonatos() {
     const { data, error } = await supabaseClient
         .from('campeonatos')
         .select('*');
@@ -19,7 +19,7 @@ async function getCampeonatos() {
     return data;
 }
 
-async function createCampeonato(campeonato) {
+export async function createCampeonato(campeonato) {
     const { data, error } = await supabaseClient
         .from('campeonatos')
         .insert([campeonato]);
@@ -28,7 +28,7 @@ async function createCampeonato(campeonato) {
 }
 
 // Times
-async function getTimes(campeonatoId) {
+export async function getTimes(campeonatoId) {
     let query = supabaseClient
         .from('times')
         .select('*');
@@ -46,7 +46,7 @@ async function getTimes(campeonatoId) {
     return data;
 }
 
-async function createTime(time) {
+export async function createTime(time) {
     const { data, error } = await supabaseClient
         .from('times')
         .insert([time]);
@@ -57,7 +57,7 @@ async function createTime(time) {
 }
 
 // Jogadores
-async function getJogadores(timeId) {
+export async function getJogadores(timeId) {
     let query = supabaseClient
         .from('jogadores')
         .select('*');
@@ -75,7 +75,7 @@ async function getJogadores(timeId) {
     return data;
 }
 
-async function createJogador(jogador) {
+export async function createJogador(jogador) {
     const { data, error } = await supabaseClient
         .from('jogadores')
         .insert([jogador]);
@@ -84,7 +84,7 @@ async function createJogador(jogador) {
 }
 
 // Jogos
-async function getJogos(campeonatoId) {
+export async function getJogos(campeonatoId) {
     let query = supabaseClient
         .from('jogos')
         .select('*');
@@ -99,7 +99,7 @@ async function getJogos(campeonatoId) {
     return data;
 }
 
-async function createJogo(jogo) {
+export async function createJogo(jogo) {
     const { data, error } = await supabaseClient
         .from('jogos')
         .insert([jogo]);
@@ -107,7 +107,7 @@ async function createJogo(jogo) {
     return data;
 }
 
-async function createJogosBatch(jogos) {
+export async function createJogosBatch(jogos) {
     console.log('Iniciando createJogosBatch com', jogos.length, 'jogos...');
     try {
         const { data, error } = await supabaseClient
@@ -126,7 +126,7 @@ async function createJogosBatch(jogos) {
 }
 
 // Gols
-async function createGol(gol) {
+export async function createGol(gol) {
     const { data, error } = await supabaseClient
         .from('gols')
         .insert([gol]);
@@ -135,7 +135,7 @@ async function createGol(gol) {
 }
 
 // Cartões
-async function createCartao(cartao) {
+export async function createCartao(cartao) {
     const { data, error } = await supabaseClient
         .from('cartoes')
         .insert([cartao]);
@@ -159,7 +159,7 @@ async function getGolsPorJogador() {
 }
 
 // Função para obter cartões por jogador (agrupados por jogador_id e tipo)
-async function getCartoesPorJogador() {
+export async function getCartoesPorJogador() {
     const { data, error } = await supabaseClient
         .from('cartoes')
         .select(`
@@ -175,6 +175,85 @@ async function getCartoesPorJogador() {
         return [];
     }
     return data;
+}
+
+// Função para calcular suspensões
+export async function calcularSuspensoes() {
+    try {
+        // Buscar jogadores com seus times
+        const { data: jogadores, error } = await supabaseClient
+            .from('jogadores')
+            .select(`
+                *,
+                times:time_id (
+                    nome
+                )
+            `)
+            .eq('status', 'ativo');
+
+        if (error) {
+            console.error('Erro ao buscar jogadores:', error);
+            return [];
+        }
+
+        // Buscar cartões da tabela cartoes
+        const { data: cartoes, error: cartoesError } = await supabaseClient
+            .from('cartoes')
+            .select('*');
+
+        if (cartoesError) {
+            console.error('Erro ao buscar cartões:', cartoesError);
+            return [];
+        }
+
+        // Agrupar cartões por jogador
+        const cartoesPorJogador = {};
+        cartoes.forEach(cartao => {
+            if (!cartoesPorJogador[cartao.jogador_id]) {
+                cartoesPorJogador[cartao.jogador_id] = {
+                    amarelos: 0,
+                    azuis: 0,
+                    vermelhos: 0
+                };
+            }
+            if (cartao.tipo === 'amarelo') {
+                cartoesPorJogador[cartao.jogador_id].amarelos++;
+            } else if (cartao.tipo === 'azul') {
+                cartoesPorJogador[cartao.jogador_id].azuis++;
+            } else if (cartao.tipo === 'vermelho') {
+                cartoesPorJogador[cartao.jogador_id].vermelhos++;
+            }
+        });
+
+        // Filtrar jogadores suspensos
+        const suspensoes = [];
+        jogadores.forEach(jogador => {
+            const cartoesJogador = cartoesPorJogador[jogador.id] || { amarelos: 0, azuis: 0, vermelhos: 0 };
+
+            let motivo = '';
+            if (cartoesJogador.vermelhos >= 1) {
+                motivo = 'Cartão vermelho';
+            } else if (cartoesJogador.azuis >= 2) {
+                motivo = `${cartoesJogador.azuis} cartões azuis`;
+            } else if (cartoesJogador.amarelos >= 3) {
+                motivo = `${cartoesJogador.amarelos} cartões amarelos`;
+            }
+
+            if (motivo) {
+                suspensoes.push({
+                    ...jogador,
+                    time_nome: jogador.times?.nome || 'N/A',
+                    motivo: motivo
+                });
+            }
+        });
+
+        return suspensoes;
+
+    } catch (error) {
+        console.error('Erro ao calcular suspensões:', error);
+        return [];
+    }
 }
 
 // Função para calcular classificação
@@ -201,4 +280,55 @@ async function calcularClassificacao(campeonatoId) {
     });
 
     return classificacao.sort((a, b) => b.pontos - a.pontos);
+}
+
+// Funções de autenticação para usuários
+
+// Login: Verificar credenciais na tabela usuarios
+export async function loginUsuario(usuario, senha) {
+    const { data, error } = await supabaseClient
+        .from('usuarios')
+        .select('*')
+        .eq('usuario', usuario)
+        .eq('senha', senha)
+        .single();
+
+    if (error) {
+        console.error('Erro no login:', error);
+        return null;
+    }
+    return data; // Retorna o usuário se encontrado
+}
+
+// Cadastro: Inserir novo usuário na tabela usuarios
+export async function cadastrarUsuario(usuario, senha, tipo, paginasPermitidas = []) {
+    const { data, error } = await supabaseClient
+        .from('usuarios')
+        .insert([{
+            usuario: usuario,
+            senha: senha,
+            tipo: tipo,
+            paginas_permitidas: paginasPermitidas
+        }]);
+
+    if (error) {
+        console.error('Erro no cadastro:', error);
+        return { success: false, error: error.message };
+    }
+    return { success: true, data };
+}
+
+// Buscar usuário por ID ou nome
+async function getUsuario(userId) {
+    const { data, error } = await supabaseClient
+        .from('usuarios')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+    if (error) {
+        console.error('Erro ao buscar usuário:', error);
+        return null;
+    }
+    return data;
 }

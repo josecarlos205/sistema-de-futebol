@@ -2,15 +2,11 @@
 
 import { calcularClassificacaoCompleta } from './classificacao.js';
 import { calcularTop4Artilheiros } from './artilharia.js';
+import { loginUsuario, cadastrarUsuario, getCampeonatos, getJogos, getTimes, getJogadores, getCartoesPorJogador, calcularSuspensoes, supabaseClient } from './database.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar dashboard
     initDashboard();
-
-    // Verificar se estamos na página correta
-    if (document.getElementById('dashboard')) {
-        loadDashboardData();
-    }
 });
 
 function initDashboard() {
@@ -18,17 +14,76 @@ function initDashboard() {
 }
 
 async function loadDashboardData() {
+    console.log('Iniciando carregamento do dashboard...');
     try {
-        // Carregar dados do dashboard
-        const campeonatos = await getCampeonatos();
-        const jogos = await getJogos(campeonatos[0]?.id); // Assumindo primeiro campeonato
-        const classificacao = await calcularClassificacaoCompleta(campeonatos[0]?.id);
+        const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+        const tipo = userData.tipo;
+        const paginasPermitidas = userData.paginas_permitidas || [];
 
-        // Atualizar interface
-        updateProximosJogos(jogos);
-        updateClassificacao(classificacao);
-        updateArtilheiros();
-        updateSuspensoes();
+        console.log('Tipo de usuário:', tipo);
+        console.log('Páginas permitidas:', paginasPermitidas);
+
+        // Carregar dados do dashboard apenas se permitido
+        const campeonatos = await getCampeonatos();
+        console.log('Campeonatos carregados:', campeonatos);
+
+        // Carregar jogos apenas se jogos.html for permitido
+        if (tipo === 'admin' || paginasPermitidas.includes('jogos.html')) {
+            console.log('Carregando jogos...');
+            const jogos = await getJogos(campeonatos[0]?.id);
+            console.log('Jogos carregados:', jogos?.length || 0, 'jogos');
+            if (jogos && jogos.length > 0) {
+                updateProximosJogos(jogos);
+            } else {
+                console.log('Nenhum jogo encontrado');
+            }
+        } else {
+            console.log('Jogos não permitidos para este usuário');
+        }
+
+        // Carregar classificação apenas se classificacao.html for permitido
+        if (tipo === 'admin' || paginasPermitidas.includes('classificacao.html')) {
+            console.log('Carregando classificação...');
+            const classificacao = await calcularClassificacaoCompleta(campeonatos[0]?.id);
+            console.log('Classificação carregada:', classificacao?.length || 0, 'times');
+            if (classificacao && classificacao.length > 0) {
+                updateClassificacao(classificacao);
+            } else {
+                console.log('Nenhuma classificação encontrada');
+            }
+        } else {
+            console.log('Classificação não permitida para este usuário');
+        }
+
+        // Carregar artilheiros apenas se artilharia.html for permitido
+        if (tipo === 'admin' || paginasPermitidas.includes('artilharia.html')) {
+            console.log('Carregando artilheiros...');
+            const artilheiros = await calcularTop4Artilheiros();
+            console.log('Artilheiros carregados:', artilheiros?.length || 0, 'artilheiros');
+            if (artilheiros && artilheiros.length > 0) {
+                updateArtilheiros();
+            } else {
+                console.log('Nenhum artilheiro encontrado');
+            }
+        } else {
+            console.log('Artilheiros não permitidos para este usuário');
+        }
+
+        // Carregar suspensões apenas se cartoes.html for permitido
+        if (tipo === 'admin' || paginasPermitidas.includes('cartoes.html')) {
+            console.log('Carregando suspensões...');
+            const suspensoes = await calcularSuspensoes();
+            console.log('Suspensões carregadas:', suspensoes?.length || 0, 'suspensões');
+            if (suspensoes && suspensoes.length > 0) {
+                updateSuspensoes();
+            } else {
+                console.log('Nenhuma suspensão encontrada');
+            }
+        } else {
+            console.log('Suspensões não permitidas para este usuário');
+        }
+
+        console.log('Dashboard atualizado.');
     } catch (error) {
         console.error('Erro ao carregar dados do dashboard:', error);
     }
@@ -67,84 +122,6 @@ async function updateArtilheiros() {
     } catch (error) {
         console.error('Erro ao carregar artilheiros:', error);
         container.innerHTML = 'Erro ao carregar artilheiros';
-    }
-}
-
-async function calcularSuspensoes() {
-    try {
-        // Buscar jogadores com seus times
-        const { data: jogadores, error } = await supabaseClient
-            .from('jogadores')
-            .select(`
-                *,
-                times:time_id (
-                    nome
-                )
-            `)
-            .eq('status', 'ativo');
-
-        if (error) {
-            console.error('Erro ao buscar jogadores:', error);
-            return [];
-        }
-
-        // Buscar cartões da tabela cartoes
-        const { data: cartoes, error: cartoesError } = await supabaseClient
-            .from('cartoes')
-            .select('*');
-
-        if (cartoesError) {
-            console.error('Erro ao buscar cartões:', cartoesError);
-            return [];
-        }
-
-        // Agrupar cartões por jogador
-        const cartoesPorJogador = {};
-        cartoes.forEach(cartao => {
-            if (!cartoesPorJogador[cartao.jogador_id]) {
-                cartoesPorJogador[cartao.jogador_id] = {
-                    amarelos: 0,
-                    azuis: 0,
-                    vermelhos: 0
-                };
-            }
-            if (cartao.tipo === 'amarelo') {
-                cartoesPorJogador[cartao.jogador_id].amarelos++;
-            } else if (cartao.tipo === 'azul') {
-                cartoesPorJogador[cartao.jogador_id].azuis++;
-            } else if (cartao.tipo === 'vermelho') {
-                cartoesPorJogador[cartao.jogador_id].vermelhos++;
-            }
-        });
-
-        // Filtrar jogadores suspensos
-        const suspensoes = [];
-        jogadores.forEach(jogador => {
-            const cartoesJogador = cartoesPorJogador[jogador.id] || { amarelos: 0, azuis: 0, vermelhos: 0 };
-
-            let motivo = '';
-            if (cartoesJogador.vermelhos >= 1) {
-                motivo = 'Cartão vermelho';
-            } else if (cartoesJogador.azuis >= 2) {
-                motivo = `${cartoesJogador.azuis} cartões azuis`;
-            } else if (cartoesJogador.amarelos >= 3) {
-                motivo = `${cartoesJogador.amarelos} cartões amarelos`;
-            }
-
-            if (motivo) {
-                suspensoes.push({
-                    ...jogador,
-                    time_nome: jogador.times?.nome || 'N/A',
-                    motivo: motivo
-                });
-            }
-        });
-
-        return suspensoes;
-
-    } catch (error) {
-        console.error('Erro ao calcular suspensões:', error);
-        return [];
     }
 }
 
@@ -305,6 +282,14 @@ function verificarAutenticacao() {
         if (footer) footer.style.display = 'block';
         if (loginBtn) loginBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
+
+        // Aplicar permissões
+        aplicarPermissoes();
+
+        // Carregar dados do dashboard após mostrar os elementos
+        if (document.getElementById('dashboard')) {
+            loadDashboardData();
+        }
     } else {
         // Esconder menu principal e mostrar tela de login
         if (header) header.style.display = 'none';
@@ -315,6 +300,22 @@ function verificarAutenticacao() {
         // Mostrar modal de autenticação automaticamente
         mostrarAuth();
     }
+}
+
+function aplicarPermissoes() {
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const tipo = userData.tipo;
+    const paginasPermitidas = userData.paginas_permitidas || [];
+
+    const navLinks = document.querySelectorAll('nav ul li a');
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (tipo === 'admin' || paginasPermitidas.includes(href)) {
+            link.style.display = 'inline-block';
+        } else {
+            link.style.display = 'none';
+        }
+    });
 }
 
 function mostrarAuth() {
@@ -347,6 +348,19 @@ function mostrarTab(tab) {
         registerSection.style.display = 'block';
         tabLogin.classList.remove('active');
         tabRegister.classList.add('active');
+        togglePermissoes(); // Atualizar permissões ao mostrar cadastro
+    }
+}
+
+window.mostrarTab = mostrarTab;
+
+function togglePermissoes() {
+    const tipo = document.getElementById('reg-tipo').value;
+    const permissoesSection = document.getElementById('permissoes-section');
+    if (tipo === 'admin') {
+        permissoesSection.style.display = 'none';
+    } else {
+        permissoesSection.style.display = 'block';
     }
 }
 
@@ -361,19 +375,21 @@ async function handleLogin(event) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    // Verificar credenciais do admin ou usuários cadastrados
-    const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if ((username === 'admin' && password === 'Admin@2024!') || user) {
-        localStorage.setItem('admin_logged_in', 'true');
-        localStorage.setItem('admin_username', username);
-        verificarAutenticacao();
-        fecharAuth();
-        mostrarMensagem('Login realizado com sucesso!', 'success');
-        location.reload(); // Recarregar página para carregar dados
-    } else {
-        mostrarMensagem('Usuário ou senha incorretos!', 'error');
+    try {
+        const user = await loginUsuario(username, password);
+        if (user) {
+            localStorage.setItem('admin_logged_in', 'true');
+            localStorage.setItem('user_data', JSON.stringify(user));
+            verificarAutenticacao();
+            fecharAuth();
+            mostrarMensagem('Login realizado com sucesso!', 'success');
+            location.reload(); // Recarregar página para carregar dados
+        } else {
+            mostrarMensagem('Usuário ou senha incorretos!', 'error');
+        }
+    } catch (error) {
+        console.error('Erro no login:', error);
+        mostrarMensagem('Erro ao fazer login. Tente novamente.', 'error');
     }
 }
 
@@ -381,37 +397,43 @@ async function handleRegister(event) {
     event.preventDefault();
 
     const username = document.getElementById('reg-username').value;
-    const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
     const confirmPassword = document.getElementById('reg-confirm-password').value;
+    const tipo = document.getElementById('reg-tipo').value;
 
     if (password !== confirmPassword) {
         mostrarMensagem('As senhas não coincidem!', 'error');
         return;
     }
 
-    // Simulação de cadastro (em produção, salvar no banco)
-    const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
-    const existingUser = users.find(u => u.username === username || u.email === email);
-
-    if (existingUser) {
-        mostrarMensagem('Usuário ou email já cadastrado!', 'error');
-        return;
+    let paginasPermitidas = [];
+    if (tipo === 'usuario') {
+        const checkboxes = document.querySelectorAll('#permissoes-section input[name="paginas"]:checked');
+        paginasPermitidas = Array.from(checkboxes).map(cb => cb.value);
+    } else {
+        // Admin tem acesso a todas
+        paginasPermitidas = ['index.html', 'campeonatos.html', 'times.html', 'jogadores.html', 'jogos.html', 'classificacao.html', 'artilharia.html', 'cartoes.html'];
     }
 
-    users.push({ username, email, password });
-    localStorage.setItem('registered_users', JSON.stringify(users));
-
-    mostrarMensagem('Usuário cadastrado com sucesso! Faça o login.', 'success');
-    mostrarTab('login');
-    location.reload(); // Recarregar página após cadastro
+    try {
+        const result = await cadastrarUsuario(username, password, tipo, paginasPermitidas);
+        if (result.success) {
+            mostrarMensagem('Usuário cadastrado com sucesso! Faça o login.', 'success');
+            mostrarTab('login');
+        } else {
+            mostrarMensagem('Erro no cadastro: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Erro no cadastro:', error);
+        mostrarMensagem('Erro ao cadastrar usuário. Tente novamente.', 'error');
+    }
 }
 
 function logout() {
     localStorage.removeItem('admin_logged_in');
     localStorage.removeItem('admin_username');
-    verificarAutenticacao();
-    mostrarMensagem('Logout realizado com sucesso!', 'info');
+    localStorage.removeItem('user_data');
+    window.location.href = 'index.html';
 }
 
 window.logout = logout;

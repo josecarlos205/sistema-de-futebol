@@ -1,9 +1,21 @@
 // Gerenciamento de jogadores
 
+import { getTimes, getJogadores, createJogador, supabaseClient } from './database.js';
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar autenticação antes de permitir ações
+    // Verificar autenticação e permissões antes de permitir ações
     if (localStorage.getItem('admin_logged_in') !== 'true') {
         alert('Você precisa estar logado para acessar esta página.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Verificar permissões para acessar jogadores.html
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const tipo = userData.tipo;
+    const paginasPermitidas = userData.paginas_permitidas || [];
+    if (tipo !== 'admin' && !paginasPermitidas.includes('jogadores.html')) {
+        alert('Você não tem permissão para acessar esta página.');
         window.location.href = 'index.html';
         return;
     }

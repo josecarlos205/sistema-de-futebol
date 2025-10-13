@@ -65,7 +65,7 @@
                 <button id="tab-register" class="tab-btn" onclick="mostrarTab('register')">Cadastrar</button>
             </div>
             <div id="login-section" class="auth-section">
-                <h2>Login do Administrador</h2>
+                <h2>Login</h2>
                 <form id="login-form">
                     <label for="username">Usuário:</label>
                     <input type="text" id="username" name="username" required>
@@ -82,14 +82,29 @@
                     <label for="reg-username">Usuário:</label>
                     <input type="text" id="reg-username" name="reg-username" required>
 
-                    <label for="reg-email">Email:</label>
-                    <input type="email" id="reg-email" name="reg-email" required>
-
                     <label for="reg-password">Senha:</label>
                     <input type="password" id="reg-password" name="reg-password" required>
 
                     <label for="reg-confirm-password">Confirmar Senha:</label>
                     <input type="password" id="reg-confirm-password" name="reg-confirm-password" required>
+
+                    <label for="reg-tipo">Tipo de Acesso:</label>
+                    <select id="reg-tipo" name="reg-tipo" required onchange="togglePermissoes()">
+                        <option value="usuario">Usuário Limitado</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+
+                    <div id="permissoes-section" style="display: block;">
+                        <label>Páginas Permitidas:</label><br>
+                        <input type="checkbox" id="perm-index" name="paginas" value="index.html" checked> Dashboard<br>
+                        <input type="checkbox" id="perm-campeonatos" name="paginas" value="campeonatos.html"> Campeonatos<br>
+                        <input type="checkbox" id="perm-times" name="paginas" value="times.html"> Times<br>
+                        <input type="checkbox" id="perm-jogadores" name="paginas" value="jogadores.html"> Jogadores<br>
+                        <input type="checkbox" id="perm-jogos" name="paginas" value="jogos.html"> Jogos<br>
+                        <input type="checkbox" id="perm-classificacao" name="paginas" value="classificacao.html"> Classificação<br>
+                        <input type="checkbox" id="perm-artilharia" name="paginas" value="artilharia.html"> Artilharia<br>
+                        <input type="checkbox" id="perm-cartoes" name="paginas" value="cartoes.html"> Cartões<br>
+                    </div>
 
                     <button type="submit" class="btn-primary">Cadastrar</button>
                 </form>
@@ -99,9 +114,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="js/database.js"></script>
+    <script type="module" src="js/database.js"></script>
     <script type="module" src="js/main.js"></script>
-    <script src="js/pdf-generator.js"></script>
-    <script src="js/help.js"></script>
+    <script type="module" src="js/pdf-generator.js"></script>
+    <script type="module" src="js/help.js"></script>
 </body>
 </html>

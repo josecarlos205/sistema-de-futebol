@@ -1,5 +1,7 @@
 // Sistema de cartões
 
+import { supabaseClient, getJogos } from './database.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const btnAtualizarCartoes = document.getElementById('btnAtualizarCartoes');
     const btnExportarCartoesPDF = document.getElementById('btnExportarCartoesPDF');
